@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  @apply bg-gray-100 text-gray-900 font-sans;
+}
+
+a {
+  @apply text-blue-600 hover:text-blue-800 transition;
+}
+
+button {
+  @apply transition duration-200 ease-in-out;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-bold;
+}
+
+input, textarea, select {
+  @apply border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500;
+}

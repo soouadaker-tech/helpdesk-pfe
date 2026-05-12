@@ -59,9 +59,14 @@ export default function TicketsPage() {
               key={t.id || t._id}
               className="bg-white shadow-md rounded-lg p-4 border hover:shadow-lg transition"
             >
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+              {/* 🔗 Lien vers la page détail */}
+              <h3
+                onClick={() => navigate(`/ticket/${t.id || t._id}`)}
+                className="text-xl font-semibold text-gray-800 mb-2 cursor-pointer hover:text-blue-600"
+              >
                 {t.title || t.subject}
               </h3>
+
               <p className="text-gray-600 mb-1">
                 <span className="font-bold">Statut:</span>{" "}
                 <span

@@ -22,7 +22,7 @@ function NotificationsDropdown() {
   useEffect(() => {
     if (userId) {
       loadNotifications();
-      const interval = setInterval(loadNotifications, 30000); // Refresh every 30s
+      const interval = setInterval(loadNotifications, 5000); // Refresh every 5s
       return () => clearInterval(interval);
     }
   }, [userId]);
@@ -30,9 +30,10 @@ function NotificationsDropdown() {
   const loadNotifications = async () => {
     try {
       const data = await getNotifications(userId);
+      console.log("📢 Notifications loaded:", data);
       setNotifications(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error("Error loading notifications:", err);
+      console.error("❌ Error loading notifications:", err);
     }
   };
 

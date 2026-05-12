@@ -54,14 +54,23 @@ export const getTicketDetails = async (id) => {
   return res.ok ? res.json() : null;
 };
 
-export const createTicket = async (ticket) => {
-  const res = await fetch(`${API_URL}/tickets`, {
-    method: "POST",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(ticket),
-  });
-  return await handleResponse(res);
-};
+
+export async function createTicket(ticketData) {
+  try {
+    const res = await fetch(`${API_URL}/tickets`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`, // إذا route محمي
+      },
+      body: JSON.stringify(ticketData),
+    });
+    if (!res.ok) throw new Error("Erreur API: " + res.statusText);
+    return await res.json();
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+}
 
 export const deleteTicket = async (id) => {
   const res = await fetch(`${API_URL}/tickets/${id}`, {

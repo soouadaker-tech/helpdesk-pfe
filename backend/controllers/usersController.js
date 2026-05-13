@@ -4,7 +4,7 @@ import User from '../models/User.js';
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.findAll({
-      attributes: ['id', 'username', 'role', 'createdAt', 'updatedAt']
+      attributes: ['id', 'username', 'email', 'role', 'createdAt', 'updatedAt']
     });
     res.json(users);
   } catch (error) {

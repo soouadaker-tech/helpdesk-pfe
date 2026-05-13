@@ -5,7 +5,11 @@ import Notification from "../models/Notification.js";
 export const addComment = async (req, res) => {
   try {
     const { ticket_id, content } = req.body;
-    const user_id = req.user.id;
+    const user_id = req.user?.id;
+
+    if (!user_id) {
+      return res.status(401).json({ error: "Utilisateur non authentifié" });
+    }
 
     const comment = await Comment.create({ ticket_id, user_id, content });
 
@@ -21,6 +25,9 @@ export const addComment = async (req, res) => {
 
     res.status(201).json(comment);
   } catch (err) {
+    if (err.name === 'SequelizeForeignKeyConstraintError') {
+      return res.status(400).json({ error: "Impossible d'ajouter le commentaire : utilisateur ou ticket introuvable." });
+    }
     res.status(500).json({ error: err.message });
   }
 };

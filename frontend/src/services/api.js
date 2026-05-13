@@ -16,7 +16,11 @@ export const registerUser = async (user) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(user),
     });
-    return await res.json();
+    const result = await res.json();
+    if (result.token) {
+      localStorage.setItem("token", result.token);
+    }
+    return result;
   } catch (err) {
     console.error("Erreur API registerUser:", err);
     return { success: false };
@@ -90,9 +94,15 @@ export const addComment = async (ticketId, content) => {
   const res = await fetch(`${API_URL}/comments`, {
     method: "POST",
     headers: getAuthHeaders(),
-    body: JSON.stringify({ ticketId, content }),
+    body: JSON.stringify({ ticket_id: ticketId, content }),
   });
   return await handleResponse(res);
+};
+
+// --- Attachments ---
+export const getAttachments = async (ticketId) => {
+  const res = await fetch(`${API_URL}/attachments/${ticketId}`, { headers: getAuthHeaders() });
+  return res.ok ? res.json() : [];
 };
 
 // --- Dashboard ---

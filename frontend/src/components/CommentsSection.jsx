@@ -1,30 +1,41 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { getComments, addComment } from "../services/api";
 
 export default function CommentsSection({ ticketId }) {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [loading, setLoading] = useState(true);
 
   // Charger les commentaires
   useEffect(() => {
-    fetch(`/api/comments/${ticketId}`)
-      .then(res => res.json())
-      .then(data => setComments(data))
-      .catch(err => console.error("Erreur chargement:", err));
+    const loadComments = async () => {
+      try {
+        const data = await getComments(ticketId);
+        setComments(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Erreur chargement commentaires:", err);
+        Swal.fire("Erreur", "Impossible de charger les commentaires", "error");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadComments();
   }, [ticketId]);
 
   // Ajouter un commentaire
   const handleAddComment = async () => {
-    try {
-      const res = await fetch(`/api/comments`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ticket_id: ticketId, content: newComment })
-      });
-      const data = await res.json();
+    if (!newComment.trim()) {
+      Swal.fire("Erreur", "Le commentaire ne peut pas être vide", "error");
+      return;
+    }
 
-      if (res.ok) {
-        setComments([...comments, data]);
+    try {
+      const result = await addComment(ticketId, newComment);
+      
+      if (result.success) {
+        setComments([...comments, result.data]);
         setNewComment("");
         Swal.fire({
           icon: "success",
@@ -36,11 +47,12 @@ export default function CommentsSection({ ticketId }) {
         Swal.fire({
           icon: "error",
           title: "Erreur",
-          text: data.error || "Impossible d'ajouter le commentaire",
+          text: result.error || "Impossible d'ajouter le commentaire",
           confirmButtonColor: "#d33"
         });
       }
     } catch (err) {
+      console.error("Erreur ajout commentaire:", err);
       Swal.fire({
         icon: "error",
         title: "Erreur serveur",
@@ -50,31 +62,41 @@ export default function CommentsSection({ ticketId }) {
     }
   };
 
+  if (loading) {
+    return <div className="p-4 text-center">Chargement des commentaires...</div>;
+  }
+
   return (
     <div className="p-4 bg-white shadow rounded">
-      <h2 className="text-lg font-bold mb-2">Commentaires</h2>
-      <ul className="space-y-2">
-        {comments.map(c => (
-          <li key={c.id} className="border p-2 rounded">
-            <p className="text-sm">{c.content}</p>
-            <span className="text-xs text-gray-500">Utilisateur #{c.user_id}</span>
-          </li>
-        ))}
-      </ul>
+      <h2 className="text-lg font-bold mb-4">Commentaires ({comments.length})</h2>
+      
+      <div className="space-y-3 mb-4 max-h-96 overflow-y-auto">
+        {comments.length === 0 ? (
+          <p className="text-gray-500 text-sm">Aucun commentaire pour le moment</p>
+        ) : (
+          comments.map(c => (
+            <div key={c.id} className="border-l-4 border-blue-500 pl-3 py-2 bg-gray-50 rounded">
+              <p className="text-sm text-gray-800">{c.content}</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Utilisateur #{c.user_id} • {c.createdAt ? new Date(c.createdAt).toLocaleString('fr-FR') : 'Date inconnue'}
+              </p>
+            </div>
+          ))
+        )}
+      </div>
 
-      <div className="mt-4 flex gap-2">
-        <input
-          type="text"
+      <div className="border-t pt-4">
+        <textarea
           value={newComment}
-          onChange={e => setNewComment(e.target.value)}
-          placeholder="Écrire un commentaire..."
-          className="flex-1 border rounded p-2"
+          onChange={(e) => setNewComment(e.target.value)}
+          placeholder="Ajouter un commentaire..."
+          className="w-full p-2 border rounded resize-none h-20"
         />
         <button
           onClick={handleAddComment}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          className="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full"
         >
-          Ajouter
+          Envoyer
         </button>
       </div>
     </div>

@@ -6,21 +6,40 @@ import { getNotifications } from "../services/api";
 export default function Header({ user }) {
   const [notifications, setNotifications] = useState([]);
   const [open, setOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(user);
 
   useEffect(() => {
-    if (user?.id) {
-      getNotifications(user.id)
-        .then(data => setNotifications(Array.isArray(data) ? data : []))
-        .catch(err => console.error("Erreur notifications:", err));
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = JSON.parse(atob(token.split(".")[1]));
+        setCurrentUser({
+          id: decoded.id,
+          name: decoded.name || user?.name || "Utilisateur",
+          role: decoded.role || user?.role || "Utilisateur",
+        });
+      } catch (e) {
+        console.error("Impossible de décoder le token", e);
+        setCurrentUser(user);
+      }
+    } else {
+      setCurrentUser(user);
+    }
+  }, [user]);
 
-      const interval = setInterval(() => {
-        getNotifications(user.id)
+  useEffect(() => {
+    if (currentUser?.id) {
+      const loadNotifications = () => {
+        getNotifications(currentUser.id)
           .then(data => setNotifications(Array.isArray(data) ? data : []))
           .catch(err => console.error("Erreur notifications:", err));
-      }, 30000);
+      };
+
+      loadNotifications();
+      const interval = setInterval(loadNotifications, 30000);
       return () => clearInterval(interval);
     }
-  }, [user?.id]);
+  }, [currentUser?.id]);
 
   const unreadCount = notifications.filter(n => n.status === "non_lu").length;
 

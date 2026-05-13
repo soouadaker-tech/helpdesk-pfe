@@ -21,7 +21,7 @@ export default function LoginPage() {
       localStorage.setItem("token", result.token);
 
       alert("✅ Connexion réussie !");
-      navigate("/dashboard");
+      window.location.href = "/dashboard";
     } else {
       alert("❌ Identifiants incorrects.");
     }

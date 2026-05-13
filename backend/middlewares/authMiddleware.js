@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
 
-export default (req, res, next) => {
+export default async (req, res, next) => {
   const authHeader = req.headers['authorization'];
   if (!authHeader) return res.status(401).json({ error: "Token manquant" });
 
@@ -9,7 +10,11 @@ export default (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, secret);
-    req.user = decoded;
+    const user = await User.findByPk(decoded.id);
+    if (!user) {
+      return res.status(401).json({ error: "Utilisateur introuvable" });
+    }
+    req.user = { id: user.id, role: user.role };
     next();
   } catch (err) {
     console.error("JWT Error:", err.message);

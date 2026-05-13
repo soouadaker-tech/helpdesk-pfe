@@ -3,7 +3,11 @@ import Notification from "../models/Notification.js";
 // Récupérer les notifications d’un utilisateur
 export const getNotificationsByUser = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ error: "Utilisateur non authentifié" });
+    }
+
     const notifs = await Notification.findAll({
       where: { user_id: userId },
       order: [["created_at", "DESC"]],

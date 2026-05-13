@@ -3,6 +3,15 @@ import sequelize from '../config/db.js';
 import Ticket from './Ticket.js';
 
 const Attachment = sequelize.define('Attachment', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  filename: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
   file_path: {
     type: DataTypes.STRING,
     allowNull: false

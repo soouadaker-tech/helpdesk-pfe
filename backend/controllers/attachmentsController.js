@@ -8,11 +8,12 @@ export const getAttachmentsByTicket = async (req, res) => {
 export const addAttachment = async (req, res) => {
   const { ticket_id } = req.body;
   const file_path = req.file ? req.file.path : null;
+  const filename = req.file ? req.file.originalname : null;
 
-  if (!file_path) {
+  if (!file_path || !filename) {
     return res.status(400).json({ error: "Aucun fichier fourni" });
   }
 
-  const attachment = await Attachment.create({ ticket_id, file_path });
+  const attachment = await Attachment.create({ ticket_id, file_path, filename });
   res.status(201).json(attachment);
 };

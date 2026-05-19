@@ -5,7 +5,6 @@ export default function ProfileSection() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Exemple: récupérer depuis localStorage
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) {
       setUser(storedUser);

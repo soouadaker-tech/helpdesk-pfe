@@ -20,12 +20,11 @@ export default function RegisterPage() {
     }
 
     const result = await registerUser({ name, email, password, role });
-    console.log("Réponse backend:", result);
     if (result.success) {
       alert("✅ Compte créé avec succès !");
-      navigate("/login");
+      navigate("/dashboard");
     } else {
-      setError("❌ Erreur lors de la création du compte.");
+      setError(result.error || "❌ Erreur lors de la création du compte.");
     }
 
   };

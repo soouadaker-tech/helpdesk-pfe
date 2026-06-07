@@ -15,7 +15,7 @@ export const getAllUsers = async (req, res) => {
 // Récupérer un utilisateur par ID
 export const getUserById = async (req, res) => {
   try {
-    const user = await User.findByPk(req.params.id); // ✅ Sequelize utilise findByPk
+    const user = await User.findByPk(req.params.id); 
     if (!user) {
       return res.status(404).json({ error: "Utilisateur introuvable" });
     }

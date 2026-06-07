@@ -1,9 +1,16 @@
 const API_URL = "http://localhost:5000/api";
 
+const logoutUser = () => {
+  localStorage.removeItem("token");
+};
+
 const handleResponse = async (res) => {
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    return { success: false, error: data.error || "Erreur API" };
+    if (res.status === 401 || res.status === 403) {
+      logoutUser();
+    }
+    return { success: false, error: data.error || "Erreur API", status: res.status };
   }
   return { success: true, data };
 };
@@ -16,14 +23,15 @@ export const registerUser = async (user) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(user),
     });
-    const result = await res.json();
-    if (result.token) {
-      localStorage.setItem("token", result.token);
+    const result = await handleResponse(res);
+    if (result.success && result.data.token) {
+      localStorage.setItem("token", result.data.token);
+      return { success: true, token: result.data.token, user: result.data.user };
     }
-    return result;
+    return { success: false, error: result.error };
   } catch (err) {
     console.error("Erreur API registerUser:", err);
-    return { success: false };
+    return { success: false, error: err.message };
   }
 };
 
@@ -34,16 +42,16 @@ export const loginUser = async (credentials) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(credentials),
     });
-    const result = await res.json();
+    const result = await handleResponse(res);
 
-    if (result.token) {
-      localStorage.setItem("token", result.token);
+    if (result.success && result.data.token) {
+      localStorage.setItem("token", result.data.token);
+      return { success: true, token: result.data.token, user: result.data.user };
     }
-
-    return result;
+    return { success: false, error: result.error };
   } catch (err) {
     console.error("Erreur API loginUser:", err);
-    return { success: false };
+    return { success: false, error: err.message };
   }
 };
 

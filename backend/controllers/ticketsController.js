@@ -1,9 +1,7 @@
-// controllers/ticketsController.js
 import Ticket from "../models/Ticket.js";
 import Notification from "../models/Notification.js";
 import User from "../models/User.js";
 
-// Lire tous les tickets
 export const getAllTickets = async (req, res) => {
   try {
     const tickets = await Ticket.findAll();
@@ -13,7 +11,6 @@ export const getAllTickets = async (req, res) => {
   }
 };
 
-// Lire un ticket par ID
 export const getTicketById = async (req, res) => {
   try {
     const ticket = await Ticket.findByPk(req.params.id);
@@ -24,7 +21,7 @@ export const getTicketById = async (req, res) => {
   }
 };
 
-// Créer un ticket
+
 export const createTicket = async (req, res) => {
   try {
     const { title, description, status, agent_id } = req.body;
@@ -41,7 +38,6 @@ export const createTicket = async (req, res) => {
       user_id: req.user?.id || null
     });
 
-    // 🔔 Notification à l'auteur du ticket
     if (req.user?.id) {
       try {
         await Notification.create({
@@ -55,7 +51,6 @@ export const createTicket = async (req, res) => {
       }
     }
 
-    // 🔔 Notification aux admins
     try {
       const admins = await User.findAll({ where: { role: "admin" } });
       for (const admin of admins) {
@@ -76,7 +71,6 @@ export const createTicket = async (req, res) => {
   }
 };
 
-// Mettre à jour un ticket
 export const updateTicket = async (req, res) => {
   try {
     const { title, description, status, agent_id } = req.body;
@@ -94,7 +88,7 @@ export const updateTicket = async (req, res) => {
       { where: { id: ticketId } }
     );
 
-    // 🔔 Notification à l'agent assigné
+
     if (agent_id) {
       try {
         await Notification.create({
@@ -108,7 +102,7 @@ export const updateTicket = async (req, res) => {
       }
     }
 
-    // 🔔 Notification à l'auteur du ticket si différent
+
     if (ticket.user_id && ticket.user_id !== req.user?.id) {
       try {
         await Notification.create({
@@ -122,7 +116,6 @@ export const updateTicket = async (req, res) => {
       }
     }
 
-    // 🔔 Notification aux admins si statut changé
     if (statusChanged) {
       try {
         const admins = await User.findAll({ where: { role: "admin" } });
@@ -145,7 +138,7 @@ export const updateTicket = async (req, res) => {
   }
 };
 
-// Supprimer un ticket
+
 export const deleteTicket = async (req, res) => {
   try {
     const ticketId = req.params.id;
@@ -157,7 +150,6 @@ export const deleteTicket = async (req, res) => {
 
     await ticket.destroy();
 
-    // 🔔 Notification sécurisée
     try {
       await Notification.create({
         user_id: req.user?.id || null,

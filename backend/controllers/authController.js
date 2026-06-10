@@ -4,14 +4,14 @@ import jwt from 'jsonwebtoken';
 
 export const register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { username, email, password, role } = req.body;
     const secret = process.env.JWT_SECRET;
 
     if (!secret) {
       return res.status(500).json({ success: false, error: "JWT_SECRET non configuré" });
     }
 
-    if (!name || !email || !password) {
+    if (!username || !email || !password) {
       return res.status(400).json({ success: false, error: "Tous les champs obligatoires doivent être remplis" });
     }
 
@@ -21,10 +21,11 @@ export const register = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
     const normalizedRole = role && role.toLowerCase() === 'admin' ? 'admin' : 'user';
 
     const user = await User.create({
-      username: name || email,
+      username,
       email,
       password: hashedPassword,
       role: normalizedRole,
@@ -49,6 +50,7 @@ export const register = async (req, res) => {
   }
 };
 
+
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -62,7 +64,17 @@ export const login = async (req, res) => {
     if (!user) {
       return res.status(401).json({ success: false, message: "Identifiants incorrects" });
     }
-    const valid = await bcrypt.compare(password, user.password);
+
+    let valid = false;
+
+    // إذا كلمة السر في DB مشفرة (hash يبدأ بـ $2a أو $2b)
+    if (user.password.startsWith("$2a") || user.password.startsWith("$2b")) {
+      valid = await bcrypt.compare(password, user.password);
+    } else {
+      // إذا كلمة السر مخزنة كنص عادي
+      valid = (password === user.password);
+    }
+
     if (!valid) {
       return res.status(401).json({ success: false, message: "Identifiants incorrects" });
     }
@@ -85,4 +97,5 @@ export const login = async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 };
+
 

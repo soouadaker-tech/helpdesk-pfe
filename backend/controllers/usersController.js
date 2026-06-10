@@ -1,6 +1,5 @@
 import User from '../models/User.js';
 
-// Récupérer tous les utilisateurs
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.findAll({
@@ -12,7 +11,6 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
-// Récupérer un utilisateur par ID
 export const getUserById = async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id); 
@@ -25,7 +23,7 @@ export const getUserById = async (req, res) => {
   }
 };
 
-// Supprimer un utilisateur
+
 export const deleteUser = async (req, res) => {
   const { id } = req.params;
   try {

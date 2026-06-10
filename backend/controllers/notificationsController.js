@@ -1,6 +1,5 @@
 import Notification from "../models/Notification.js";
 
-// Récupérer les notifications d’un utilisateur
 export const getNotificationsByUser = async (req, res) => {
   try {
     const userId = req.user?.id;
@@ -18,7 +17,6 @@ export const getNotificationsByUser = async (req, res) => {
   }
 };
 
-// Créer une notification
 export const addNotification = async (req, res) => {
   try {
     const { user_id, type, message } = req.body;
@@ -29,7 +27,6 @@ export const addNotification = async (req, res) => {
   }
 };
 
-// Mettre à jour le statut (lu/non lu)
 export const updateNotificationStatus = async (req, res) => {
   try {
     const { id } = req.params;

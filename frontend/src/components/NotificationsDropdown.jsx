@@ -7,7 +7,7 @@ function NotificationsDropdown() {
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-    // Try to get userId from token or state
+
     const token = localStorage.getItem("token");
     if (token) {
       try {
@@ -22,7 +22,7 @@ function NotificationsDropdown() {
   useEffect(() => {
     if (userId) {
       loadNotifications();
-      const interval = setInterval(loadNotifications, 5000); // Refresh every 5s
+      const interval = setInterval(loadNotifications, 5000); 
       return () => clearInterval(interval);
     }
   }, [userId]);

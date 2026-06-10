@@ -6,17 +6,14 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Ici tu peux ajouter la logique pour supprimer le token ou session
     alert("✅ Déconnexion réussie !");
     navigate("/login");
   };
 
   return (
     <div className="w-full bg-blue-900 text-white flex items-center justify-between px-6 py-3 shadow">
-      {/* Titre du projet */}
       <h1 className="text-xl font-bold">Helpdesk - Gestion des Tickets</h1>
 
-      {/* Bouton Déconnexion */}
       <button
         onClick={handleLogout}
         className="flex items-center bg-red-600 px-3 py-2 rounded hover:bg-red-700"

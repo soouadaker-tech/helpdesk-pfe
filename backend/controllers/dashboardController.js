@@ -6,14 +6,12 @@ export const getDashboardStats = async (req, res) => {
   try {
     const tickets = await Ticket.findAll();
     
-    // Count by status
     const statusCounts = {
       open: tickets.filter(t => t.status === 'Ouvert').length,
       inProgress: tickets.filter(t => t.status === 'En cours').length,
       resolved: tickets.filter(t => t.status === 'Fermé').length,
     };
     
-    // Count by month (mock data for now)
     const monthCounts = {
       jan: 0,
       feb: 0,

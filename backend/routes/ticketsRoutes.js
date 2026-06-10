@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/', authMiddleware, getAllTickets);
 router.get('/:id', authMiddleware, getTicketById);
-router.post('/', authMiddleware, createTicket);  // Tous les utilisateurs peuvent créer des tickets
+router.post('/', authMiddleware, createTicket);  
 router.put('/:id', authMiddleware, roleMiddleware(['admin','agent']), updateTicket);
 router.delete('/:id', authMiddleware, roleMiddleware(['admin']), deleteTicket);
 
